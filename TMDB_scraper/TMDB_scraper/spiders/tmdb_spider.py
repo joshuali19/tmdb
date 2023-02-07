@@ -21,9 +21,9 @@ class TmdbSpider(scrapy.Spider):
         Parses the TMDB cast and crew website.
         @ input:
         - self: TmdbSpider
-        - response: the call to a url
+        - response: the call to start_urls[0]
         @ output:
-        - yields a request to get the page with actors.
+        - yields a request to navigate to the page with actors.
         '''
         cast = self.start_urls[0] + '/cast' # hardcode the cast page
         
@@ -35,9 +35,9 @@ class TmdbSpider(scrapy.Spider):
         for each actor, goes to their respective acting profile page on TMDB.
         @ input:
         - self: TmdbSpider
-        - response: the call to the url
+        - response: the call to the "Full Cast & Crew" page
         @ output:
-        - yields a request to get the profile page of each actor.
+        - yields a request to navigate to the profile page of each actor.
         '''
         
         # for each page redirection on the cast photos
@@ -50,14 +50,13 @@ class TmdbSpider(scrapy.Spider):
             
     def parse_actor_page(self, response):
         '''
-        obtains the cinematography of the actor.
+        obtains the films of the actor.
         @ input:
         - self: TmdbSpider
-        - response: the call to the url
+        - response: the call to the actor's page
         @ output:
         - yields a dictionary with actor name and movie.
         '''
-        
         # obtain the actor name
         actor_name = response.css('div.title a::text').get()
         
@@ -65,6 +64,5 @@ class TmdbSpider(scrapy.Spider):
         for acting_gig in response.css('h3.zero + table.card.credits a.tooltip bdi::text'):
             title = acting_gig.get() # obtain the right URL
             
-            yield {'actor': actor_name, 'movie_or_TV_name': title} # yield a dictionary with actor and title of movie they were in.
-        
-        
+            yield {'actor': actor_name, 'movie_or_TV_name': title} 
+            # yield a dictionary with actor and title of movie they were in.
